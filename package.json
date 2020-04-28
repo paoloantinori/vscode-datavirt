@@ -271,6 +271,7 @@
 		"*"
 	],
 	"scripts": {
+		"build:css": "node-sass scss/ -o css/ --output-style compressed",
 		"vscode:prepublish": "tsc -p ./",
 		"compile": "tsc -p ./",
 		"watch": "tsc -w -p ./",
