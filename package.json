@@ -227,6 +227,11 @@
 					"when": "viewItem == dv.environment"
 				},
 				{
+					"group": "dv@1",
+					"command": "datavirt.test.form",
+					"when": "viewItem == dv.environment"
+				},
+				{
 					"group": "dv@3",
 					"command": "datavirt.create.envvar.secret",
 					"when": "viewItem == dv.environment"

@@ -23,17 +23,27 @@ import * as vscode from 'vscode';
 import { DataVirtConfig } from '../model/DataVirtModel';
 import { SchemaTreeNode } from '../model/tree/SchemaTreeNode';
 import { ViewColumn, Uri, WebviewPanel, window } from 'vscode';
+import { EnvironmentTreeNode } from '../model/tree/EnvironmentNode';
+import { handleEnvironmentVariableCreation } from './CreateEnvironmentVariableCommand';
 
 let panel: WebviewPanel;
 // for tests only
 let callback: (message: string) => void;
 
-export async function testForm() {
+export async function testForm(envNode: EnvironmentTreeNode) {
 	if (extension.workspaceReady) {
-		var message = await showForm("Paolo waz here", [] );
+		var answer = await showForm("Paolo waz here", [] );
 		//message = message.then(value => {return value;});
-		console.log({message});
-		if (message === "") {
+		console.log({answer});
+		const yaml: DataVirtConfig = envNode.getProject().dvConfig;
+		const file: string = envNode.getProject().file;
+		let success: boolean = await handleEnvironmentVariableCreation(yaml, envNode.environment, file, constants.REFERENCE_TYPE_VALUE, answer['key'], answer['value']);
+		if (success) {
+			vscode.window.showInformationMessage(`New environment variable ${answer['key']} has been created successfully...`);
+		} else {
+			vscode.window.showErrorMessage(`An error occured when trying to create a new environment variable ${answer['key']}...`);
+		}
+		if (answer === "") {
 			const allowEmpty = await window.showWarningMessage(
 				"Do you really want to commit an empty message?",
 				{ modal: true },
@@ -41,7 +51,7 @@ export async function testForm() {
 				);
 				
 			}
-			return message;
+			return answer;
 			
 		} else {
 			vscode.window.showErrorMessage(`DataVirt Tooling only works when a workspace folder is opened.` +
@@ -120,10 +130,14 @@ export async function testForm() {
 				<fieldset>
 				<label for="key">Key here</label>
 				<input id="key" placeholder="aaa"></input>
+				<br>
 				<label for="value">Value here</label>
 				<input id="value" placeholder="bbb"></input>
+				<br>
+				<!--
 				<label for="message">text area example</label>
 				<textarea id="message" rows="5" placeholder="ccc"></textarea>
+				-->
 				<button id="submit" class="button-primary">Create</button>
 				<div class="float-right">
 				<button id="cancel" class="button button-outline">Cancel</button>
@@ -133,20 +147,20 @@ export async function testForm() {
 				</section>
 				<script>
 				const vscode = acquireVsCodeApi();
-				const txtMessage = document.getElementById("message");
+				//const txtMessage = document.getElementById("message");
 				const key = document.getElementById("key");
 				const value = document.getElementById("value");
 				const btnSubmit = document.getElementById("submit");
 				const btnCancel = document.getElementById("cancel");
 				// load current message
-				txtMessage.value = ${JSON.stringify(message)};
+				//txtMessage.value = ${JSON.stringify(message)};
 				
 				btnSubmit.addEventListener("click", function() {
 					vscode.postMessage({
 						command: "commit",
 						key: key.value,
 						value: value.value,
-						message: txtMessage.value
+						//message: txtMessage.value
 					});
 				});
 				btnCancel.addEventListener("click", function() {
