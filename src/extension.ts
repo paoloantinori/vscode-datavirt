@@ -31,6 +31,7 @@ import { deleteDataSourceCommand } from './commands/DeleteDataSourceCommand';
 import { deleteDataSourceEntryCommand } from './commands/DeleteDataSourceEntryCommand';
 import { deleteEnvironmentVariableCommand } from './commands/DeleteEnvironmentVariableCommand';
 import { deployVDBCommand } from './commands/DeployVDBCommand';
+import { testForm } from './commands/TestForm';
 import { editDataSourceEntryCommand } from './commands/EditDataSourceEntryCommand';
 import { editEnvironmentVariableCommand } from './commands/EditEnvironmentVariableCommand';
 import { editSchemaCommand, handleSaveDDL } from './commands/EditSchemaCommand';
@@ -105,6 +106,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('datavirt.edit.schema', editSchemaCommand));
 	context.subscriptions.push(vscode.commands.registerCommand('datavirt.deploy', deployVDBCommand));
 	context.subscriptions.push(vscode.commands.registerCommand('datavirt.undeploy', undeployVDBCommand));
+	context.subscriptions.push(vscode.commands.registerCommand('datavirt.test.form', testForm));
 
 	languageServer.activate(context);
 }
